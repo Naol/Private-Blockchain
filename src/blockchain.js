@@ -11,6 +11,7 @@
 const sha256 = require('crypto-js/sha256');
 const BlockClass = require('./block.js');
 const bitcoinMessage = require('bitcoinjs-message');
+const { json } = require('body-parser');
 
 class Blockchain {
 
@@ -148,7 +149,7 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-            let block = self.chain.filter(p => p.hash === hash);
+            let block = self.chain.find(p => p.hash === hash);
             if(block){
                 resolve(block);
             } else {
@@ -189,13 +190,13 @@ class Blockchain {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
-            
 
             self.chain.forEach(async (block) => {
                 let block_data = await block.getBData();
                 if(block_data){
                     if (block_data.data.owner_data === address){
-                        stars.push(block_data.data.star_data);
+                        let stars_data = ({owner:block_data.data.owner_data, star:block_data.data.star_data});                        
+                        stars.push(stars_data);
                     }
                 }
             });
